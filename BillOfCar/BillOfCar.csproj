@@ -7,11 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="CSRedisCore" Version="3.8.802" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.27" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
+      <Folder Include="Helpers\" />
+      <Folder Include="Interfaces\" />
     </ItemGroup>
 
 </Project>
