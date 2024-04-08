@@ -4,7 +4,7 @@ namespace BillOfCar.Models;
 
 public class CarContext : DbContext
 {
-    public CarContext(DbContextOptions options) : base(options)
+    public CarContext(DbContextOptions<CarContext> options) : base(options)
     {
         
     }
@@ -17,4 +17,5 @@ public class CarContext : DbContext
     
     public DbSet<User> Users { get; set; }
     public DbSet<Car> Cars { get; set; }
+    public DbSet<Config> Configs { get; set; }
 }
