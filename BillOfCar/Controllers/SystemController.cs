@@ -2,6 +2,7 @@ using System.Diagnostics;
 using BillOfCar.ClientApi;
 using BillOfCar.Helpers;
 using BillOfCar.Interfaces;
+using BillOfCar.Manager;
 using BillOfCar.Models;
 using BillOfCar.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -82,13 +83,28 @@ public class SystemController : Controller
             catch (Exception e)
             {
                 var logModel = new LogModel();
-                await _logContext.Logs.AddAsync(new Log()
+                // await _logContext.Logs.AddAsync(new Log()
+                // {
+                //     PacketId = packetId.ToString(),
+                //     Time = -1,
+                //     UserId = userId,
+                //     Logs = logModel.AddProp("Request", packet)
+                //         .AddProp("Exception", e)
+                //         .AddProp("Ip", _httpContextAccessor.HttpContext.Connection.RemoteIpAddress)
+                //         .Build(),
+                //     Level = Level.Error,
+                //     Date = DatetimeHelper.Now
+                // });
+                LogManager.GetInstance().AddLog(new Log()
                 {
                     PacketId = packetId.ToString(),
                     Time = -1,
                     UserId = userId,
-                    Logs = logModel.AddProp("Request", packet).AddProp("Exception", e)
+                    Logs = logModel.AddProp("Request", packet)
+                        .AddProp("Exception", e)
+                        .AddProp("Ip", _httpContextAccessor.HttpContext.Connection.RemoteIpAddress)
                         .Build(),
+                    Level = Level.Error,
                     Date = DatetimeHelper.Now
                 });
                 await _logContext.SaveChangesAsync();

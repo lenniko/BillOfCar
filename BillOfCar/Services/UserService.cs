@@ -51,14 +51,18 @@ public class UserService : BaseService
         var codeLimit = Redis_Extension.GenerateKey(Redis_Extension.CodeLimit, phone);
         if (RedisHelper.Exists(codeLimit))
         {
-            var count = await RedisHelper.GetAsync(codeLimit);
-            if (int.Parse(count) > 100)
-            {
-                return new SendCodeResponse()
-                {
-                    ErrorCode = ErrorCode.User_CodeExceedLimit
-                };
-            }
+            await RedisHelper.IncrByAsync(codeLimit, 1);
+        }
+        else
+        {
+            await RedisHelper.SetAsync(codeLimit, 1);
+            await RedisHelper.ExpireAsync(codeLimit, 60);
+        }
+
+        var count = await RedisHelper.GetAsync<int>(codeLimit);
+        if (count > 1000)
+        {
+            Console.WriteLine("[Warning] 用户请求速率异常");
         }
         if (RedisHelper.Exists(key))
         {
@@ -67,10 +71,9 @@ public class UserService : BaseService
                 ErrorCode = ErrorCode.User_CodeNotExpired
             };
         }
-        
         var generatedCode = Utils.GeneratedCode();
         await RedisHelper.SetAsync(key, generatedCode);
-        await RedisHelper.ExpireAsync(key, 60);
+        await RedisHelper.ExpireAsync(key, 600);
         return new SendCodeResponse()
         {
             ErrorCode = ErrorCode.Success,

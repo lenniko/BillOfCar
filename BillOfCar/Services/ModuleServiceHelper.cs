@@ -170,6 +170,7 @@ public class ModuleServiceHelper : IModuleServiceHelper
                 PacketId = meta.PacketId.ToString(),
                 Time = sw.Elapsed.TotalMilliseconds,
                 Date = DatetimeHelper.Now,
+                Level = Level.Info,
                 Logs = logModel.AddProp("Request", parameter)
                     .AddProp("Response", result)
                     .Build()

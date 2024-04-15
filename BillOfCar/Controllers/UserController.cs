@@ -110,7 +110,7 @@ public class UserController : ControllerBase
     {
         _context.Add(new User()
         {
-            UserName = "初来乍到",
+            UserName = "MoMo",
             PhoneNumber = telephone,
             Password = password,
             CreatedAt = DateTimeOffset.UtcNow,

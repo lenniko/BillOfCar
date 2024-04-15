@@ -1,9 +1,11 @@
 using BillOfCar.Helpers;
 using BillOfCar.Interfaces;
+using BillOfCar.Manager;
 using BillOfCar.Models;
 using BillOfCar.Services;
 using CSRedis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,12 @@ builder.Services.AddDbContext<LogContext>(option =>
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     option.UseMySql(connectionString, serverVersion);
 });
+builder.Services.AddDbContextFactory<LogContext>(option =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("LogMysqlString");
+    var serverVersion = ServerVersion.AutoDetect(connectionString);
+    option.UseMySql(connectionString, serverVersion);
+}, ServiceLifetime.Scoped);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddModules(configuration);
 builder.Services.AddScoped<IModuleServiceHelper, ModuleServiceHelper>();
@@ -34,6 +42,11 @@ builder.Services.AddSingleton(builder.Services);
 var carContext = builder.Services.BuildServiceProvider().GetRequiredService<CarContext>();
 ConfigHelper.Init(carContext);
 RedisHelper.Initialization(new CSRedisClient("127.0.0.1:6379, defaultDatabase=0,poolsize=500,ssl=false,writerBuffer=10240"));
+// 服务
+var contentFactory = builder.Services.BuildServiceProvider().GetRequiredService<IDbContextFactory<LogContext>>();
+ProcessManager.contentFactory = contentFactory;
+_ = ProcessManager.GetInstance();
+_ = new LogProcess();
 
 var app = builder.Build();
 app.Urls.Add("http://localhost:8080");
