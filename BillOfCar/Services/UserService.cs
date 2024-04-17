@@ -4,9 +4,11 @@ using BillOfCar.ClientApi.UserAction;
 using BillOfCar.Consts;
 using BillOfCar.Helpers;
 using BillOfCar.Interfaces;
+using BillOfCar.Manager;
 using BillOfCar.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic.CompilerServices;
+using Newtonsoft.Json;
 using Utils = BillOfCar.Helpers.Utils;
 
 namespace BillOfCar.Services;
@@ -45,6 +47,20 @@ public class UserService : BaseService
     [Method((int)PacketIds.User_SendCode % GamePacket.Factor, false)]
     public async Task<IPacketBody> SendCode(SendCodeRequest request)
     {
+        var m = new EmailMessage()
+        {
+            Email = request.Telephone,
+            Msg = "测试消息"
+        };
+        var message = new Message()
+        {
+            Type = eMessage.Email,
+            UserId = -1,
+            UUID = Guid.NewGuid().ToString().ToLower().Replace("-", ""),
+            Content = JsonConvert.SerializeObject(m),
+            Timestamp = DatetimeHelper.TimeStamp
+        };
+        MessageProcess.ProduceMsg(message);
         var limit = ConfigHelper.Get("Limit");
         var phone = request.Telephone;
         var key = Redis_Extension.GenerateKey(Redis_Extension.Code, phone);
@@ -74,6 +90,7 @@ public class UserService : BaseService
         var generatedCode = Utils.GeneratedCode();
         await RedisHelper.SetAsync(key, generatedCode);
         await RedisHelper.ExpireAsync(key, 600);
+        
         return new SendCodeResponse()
         {
             ErrorCode = ErrorCode.Success,

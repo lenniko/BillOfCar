@@ -24,7 +24,7 @@ public class LogProcess : BaseProcess
     List<Log> list = new List<Log>();
     public override async Task Update()
     {
-        Console.WriteLine("执行update");
+        Console.WriteLine("日志记录");
         try
         {
             for (int i = 0; i < logCount; i++)

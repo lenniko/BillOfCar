@@ -21,18 +21,24 @@ builder.Services.AddDbContext<CarContext>(option =>
     var connectionString = builder.Configuration.GetConnectionString("CarMysqlString");
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     option.UseMySql(connectionString, serverVersion);
+    option.UseLoggerFactory(LoggerFactory.Create(builder => { builder.AddDebug(); }));
+    option.EnableSensitiveDataLogging();
 });
 builder.Services.AddDbContext<LogContext>(option =>
 {
     var connectionString = builder.Configuration.GetConnectionString("LogMysqlString");
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     option.UseMySql(connectionString, serverVersion);
+    option.UseLoggerFactory(LoggerFactory.Create(builder => { builder.AddDebug(); }));
+    option.EnableSensitiveDataLogging();
 });
 builder.Services.AddDbContextFactory<LogContext>(option =>
 {
     var connectionString = builder.Configuration.GetConnectionString("LogMysqlString");
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     option.UseMySql(connectionString, serverVersion);
+    option.UseLoggerFactory(LoggerFactory.Create(builder => { builder.AddDebug(); }));
+    option.EnableSensitiveDataLogging();
 }, ServiceLifetime.Scoped);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddModules(configuration);
@@ -47,6 +53,7 @@ var contentFactory = builder.Services.BuildServiceProvider().GetRequiredService<
 ProcessManager.contentFactory = contentFactory;
 _ = ProcessManager.GetInstance();
 _ = new LogProcess();
+_ = new MessageProcess();
 
 var app = builder.Build();
 app.Urls.Add("http://localhost:8080");

@@ -35,7 +35,6 @@ public class ProcessManager
                         if (baseProcess != null)
                         {
                             baseProcess.task.Start();
-                            Console.WriteLine("启动线程");
                             // DebugHelper.Log($"[ProcessManager] PID={baseProcess.PID} ProcessType={baseProcess.ProcessType} 正式启动");
                         }
                     }
